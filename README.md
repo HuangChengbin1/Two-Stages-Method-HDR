@@ -1,10 +1,16 @@
 # HDR Image Reconstruction from Single LDR Images with Two-Stage Method
 
+## Video Link:
+
+
+
+## 成员分工：
+
 
 
 ## Abstract
 
-
+本文提出了一种基于双阶段神经网络的方法，通过单张低动态范围（LDR）图像生成不同曝光的LDR图像并融合它们来重建高动态范围（HDR）图像。在第一阶段，我们使用卷积神经网络（CNN）进行监督学习，生成多张不同曝光的LDR图像，这些图像模拟了实际拍摄中的多次曝光效果，为HDR重建提供了丰富的图像信息。在第二阶段，我们采用深度耦合反馈网络（CF-Net），结合多曝光融合（MEF）和超分辨率（SR）技术，将一对极端曝光的低分辨率LDR图像转化为高动态范围和高分辨率的图像。实验结果表明，该方法在视觉质量和细节保留方面具有一定效果，为从单一LDR图像重建HDR图像提供了可能有效的解决方案。
 
 ## 1. Introduction
 
@@ -124,11 +130,11 @@ $$
 
 使用Adam优化器以固定学习率0.0002和momentum为0.5的batch大小为1的随机梯度下降来训练网络。用标准差为0.02的零均值高斯噪声初始化2D卷积和3D反卷积的所有权重。在批量归一化后将50%的dropout率应用于解码器的前三个反卷积层，以便使解码器对编码特征中的噪声具有鲁棒性。
 
-### 4.3 CF-Net
+### 4.2 CF-Net
 
 本节将介绍CF-Net。首先在4.3.1节中介绍整个网络架构，然后在4.3.2节中分析在网络中使用的耦合反馈块(CFB)的新架构，最后在4.3.3节中介绍损失函数和训练策略。
 
-#### 4.3.1 Network Architecture
+#### 4.2.1 Network Architecture
 
 ![](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/CF-Net%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84.png?raw=true)
 
@@ -183,7 +189,7 @@ $$
 $$
 这里，$w_o$和 $w_u$ 是加权参数。本文将$w_o$和$w_u$ 都设为 0.5。虽然 $\{I^o_t\}^{T-1}_{t=1}$ 和$\{I^u_t\}^{T-1}_{t=1}$并不直接用于获取最终图像，但它们在提高最终图像的性能方面发挥着重要作用。从公式 (13) 和 (14) 中可以看出，只有准确重建 $I^o_t$和 $I^u_t$，才能得到有效的高级特征$G^o_t$和 $G^u_t$。只有利用这些有效的高级特征，才能高精度地重建最终图像。
 
-#### 4.3.2 Coupled Feedback Block (CFB)
+#### 4.2.2 Coupled Feedback Block (CFB)
 
 耦合反馈块（CFB）是 CF 网络的基本核心组件。许多研究都证实，反馈机制有助于图像复原。在本文中，提出了一种耦合反馈机制，并证明它能为图像超分辨率和图像融合任务带来巨大好处。Figure 7显示了所提出的 CFB 的详细架构。虽然网络中存在一系列 CFB，但每个 CFB 的结构都是相同的。在此，我们以上层子网络中的第 t 个 CFB 为例，介绍其内部结构及其与其他块的交互。
 
@@ -191,9 +197,9 @@ $$
 
 <center>Fig.7. The symmetric architecture of the t -th CFB in the upper and lower sub-networks. The upper CFB accepts Foin,Got−1,Gut−1 as inputs, and output Got , while the lower CFB accepts Fuin,Gut−1,Got−1 as inputs, and output Gut .</center>
 
-#### 4.3.3 损失函数
+#### 4.2.3 损失函数
 
-##### 4.3.3.1 平均结构相似度(Mean Structural Similarity Index Metric, MSSIM)
+##### 4.2.3.1 平均结构相似度(Mean Structural Similarity Index Metric, MSSIM)
 
 本文采用MSSIM损失对网络进行端到端训练，用于测量失真图像与参考图像斑块之间的差异，与均方误差(MSE)相比，它能更好地描述图像的感知质量。给定一个畸变图像patch x和一个参考图像patch y，SSIM定义如下公式：
 $$
@@ -210,7 +216,7 @@ $$
 L_{MS}(X,Y)=1-MSSIM(X,Y)	\tag{18}
 $$
 
-##### 4.3.3.2 损失函数
+##### 4.2.3.2 损失函数
 
 CF-Net总损失函数定义：
 $$
@@ -233,13 +239,31 @@ CNN:在论文中，原作者收集了网上的在线数据库（包含1043张HDR
 
 <center>Fig.8 Construct a new training set for comparison. The six graphs on the left are the effects of the original training set, and the six graphs on the right are the effects of the reconstructed training set</center>
 
+#### 5.1.2 第二阶段训练集
+
+CF—Net：训练数据来自SICE数据集[^20]，该数据集提供了7种不同曝光水平的多曝光图像序列。由于工作重点是解决极端曝光融合问题，因此我们只选择了一 对极度过度曝光和曝光不足的图像进行训练。这些图像的一些例子如图i所示，其中涵盖了广泛的场景，包括人类、自然景观和人造建筑等。可以看到，曝光不足的图片极度黑暗，而过度曝光的图片极度明亮，这意味着很多细节都隐藏在两者之中。我们的方法能够还原这些细节，并进一步提高图像的分辨率。注意，ground-truth融合图像是由SICE数据集[^20]提供的，这对训练过程有很大的好处。总共有450对曝光过度和曝光不足的图像，但限于设备，我们只能随机选择15对用于训练进行测试。
+
 ### 5.2 Quantitative Comparison Results
 
+我们使用三个指标来衡量我们方法的性能，包括峰值信噪比(PSNR)、SSIM和MEF-SSIM。其中，PSNR和SSIM用于评估SR精度，MEF-SSIM用于描述融合性能.
 
+| Methods Combination |  EDSR   |  RCAN   |  SRFBN  |   SAN   |   CFN   |  Ours  |
+| :-----------------: | :-----: | :-----: | :-----: | :-----: | :-----: | :----: |
+|        PSNR         | 18.20dB | 18.20dB | 18.16dB | 18.18dB | 22.52dB | 9.45dB |
+|        SSIM         | 0.8136  | 0.8141  | 0.8100  | 0.8128  | 0.8698  | 0.5552 |
+|      MEF-SSIM       | 0.8490  | 0.8489  | 0.8464  | 0.8481  | 0.9218  | 0.5923 |
+
+<center>Tab.1. Quantitative comparison with other advanced methods</center>
+
+这三个指标的值越高，表明图像的质量和融合性能越好，由于资源限制，我们的方法和模型是经过简化的版本，所以在性能的表现上并不如其他先进的方法，但我们有理由相信在相同的训练资源的情况下，我们的模型能够取得一个较好的表现。
 
 ### 5.3 Qualitative Comparison Results
 
+![](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/tree_compare.png?raw=true)
 
+<center>Fig.9. Qualitative comparison between our method and advanced methods. The left image is the image synthesized by our method, and the right image is the image synthesized by CFN</center>
+
+根据Figure 9可以看出，在排除对资源限制的影响看考虑，直观上可以看出，我们的模型在一定程度上对合成HDR图像存在其可行之处，在细节上若是有更好的处理，那么生成的图片质量将会得到大幅提高。
 
 ## 6. Discussion and Conclusions
 
@@ -268,3 +292,4 @@ CNN:在论文中，原作者收集了网上的在线数据库（包含1043张HDR
 [^17]:Targ S, Almeida D, Lyman K. Resnet in resnet: Generalizing residual architectures[J]. arXiv preprint arXiv:1603.08029, 2016.
 [^18]:M. Haris, G. Shakhnarovich, and N. Ukita, “Deep back-projection networks for super-resolution,” in *Proc. IEEE/CVF Conf. Comput. Vis.* *Pattern Recognit.*, Jun. 2018, pp. 1664–1673.
 [^19]:Lee S, An G H, Kang S J. Deep recursive hdri: Inverse tone mapping using generative adversarial networks[C]//proceedings of the European Conference on Computer Vision (ECCV). 2018: 596-611.
+[^20]:J. Cai, S. Gu, and L. Zhang, “Learning a deep single image contrast enhancer from multi-exposure images,” IEEE Trans. Image Process., vol. 27, no. 4, pp. 2049–2062, Apr. 2018.

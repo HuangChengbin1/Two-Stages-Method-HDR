@@ -36,7 +36,7 @@
 
 ### 3.1 多曝光LDR图像合成
 
-![DrTMO方法概述](D:\计算机视觉\HDRI\报告\pic from paper\DrTMO方法概述.png)
+![DrTMO方法概述](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/DrTMO%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0.png)
 
 <center>Fig.1. Overview of the proposed method. The flow is decomposed into the learning and inference phases. In the learning phase, the bracketed LDR images are first created from HDR databases by simulating cameras. Next, we let our fully CNNs learn the changes in the exposures of the bracketed images. In the inference phase, the learned CNNs compute LDR images with different exposures from a single input LDR image. The final HDR image is then generated from these bracketed LDR images.</center>
 
@@ -54,7 +54,7 @@ $$
 
 为了定义CRF，使用了Grossberg and Nayar的响应函数数据库(DoRF)[Grossberg and Nayar 2003]。这个数据库由作者收集的201种常见品牌的胶片、电荷耦合器件(CCDs)和数码相机的响应曲线组成。数据库种的所有CRF都是单调的，在[0, 1]范围内归一化，并以1000点采样。所有CRF都显示在Figure 2的左图。然而，使用所有的CRF是多余的，并且不必要地增加了训练时间，因此只使用K-means聚类选择的具有代表性的CRF（Figure 2，右）。在本次实验中使用5个CRF用样条插值。
 
-![CRFs](D:\计算机视觉\HDRI\报告\pic from paper\CRFs.png)
+![CRFs](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/CRFs.png?raw=true)
 
 <center>Fig.2. Camera response curves for creating training data. Using all response curves in the database [Grossberg and Nayar 2003] is redundant(left), so we choose five representative curves using k-means clustering(right).</center>
 
@@ -64,7 +64,7 @@ $$
 $$
 其中T为偶数，$j=1, 2, ..., T+1$。然后将$E_i\Delta t_j$归一化，使$E_i\Delta t_{T/2+1}(=E_i\ because\ \Delta t_{T/2+1}=1)$的平均像素值等于0.5，在原作者的实验中，使用$T=8,\tau=\sqrt2$。Figure 3为得到的不同曝光的LDR图像，虽然$E_i$的归一化和$\Delta t_j$的选择决定了推断的HDR图像的动态范围，但$E_i$或$\Delta t_j$的线性缩放可以通过推断HDR值的线性缩放来补偿。因此，如果推断的HDR图像有点太暗或太亮，用户可以通过线性缩放像素值来调整它。
 
-![](D:\计算机视觉\HDRI\报告\result\Forest_mapped.png)
+![](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/Forest_mapped.png?raw=true)
 
 <center>Fig.3. Examples of bracketed images created from the HDR datasets. Exposures are selected to avoid completely white or black regions.</center>
 
@@ -80,7 +80,7 @@ $$
 
 ### 4.1 UP/DOWN-Exposure Models
 
-![](D:\计算机视觉\HDRI\报告\pic from paper\DrTMO的网络架构.png)
+![](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/DrTMO%E7%9A%84%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84.png?raw=true)
 
 <center>Fig.4. Original network architecture. The same architecture is used both for up- and down-exposure models.</center>
 
@@ -88,7 +88,7 @@ Figure 4显示了原论文[^3]中该部分网络的架构，网络的输入是�
 
 由于资源限制，无法完全复现该网络架构，所以我们对该网络架构稍作调整，Figure 5是调整后的网络架构。
 
-![](D:\计算机视觉\HDRI\报告\pic from paper\DrTMO的网络架构(1).png)
+![](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/DrTMO%E7%9A%84%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84(1).png?raw=true)
 
 <center>Fig.5. Our new network architecture. The same architecture is used both for up- and down-exposure models.</center>
 
@@ -130,7 +130,7 @@ $$
 
 #### 4.3.1 Network Architecture
 
-![](D:\计算机视觉\HDRI\报告\pic from paper\CF-Net网络架构.png)
+![](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/CF-Net%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84.png?raw=true)
 
 <center>Fig.6. Network architecture of the proposed CF-Net. The overall network is composed of two sub-nets with LR over-exposed and under-exposed images as inputs, respectively. Each sub-net is composed of an initial feature extraction block (FEB), a super-resolution block (SRB) and several coupled feedback blocks (CFB). The two sub-nets interact and communicate with each other through the CFB, to boost the super-resolution and exposure fusion performance simultaneously.</center>
 
@@ -187,7 +187,7 @@ $$
 
 耦合反馈块（CFB）是 CF 网络的基本核心组件。许多研究都证实，反馈机制有助于图像复原。在本文中，提出了一种耦合反馈机制，并证明它能为图像超分辨率和图像融合任务带来巨大好处。Figure 7显示了所提出的 CFB 的详细架构。虽然网络中存在一系列 CFB，但每个 CFB 的结构都是相同的。在此，我们以上层子网络中的第 t 个 CFB 为例，介绍其内部结构及其与其他块的交互。
 
-![CF-Net CFB](D:\计算机视觉\HDRI\报告\pic from paper\CF-Net CFB.png)
+![CF-Net CFB](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/CF-Net%20CFB.png?raw=true)
 
 <center>Fig.7. The symmetric architecture of the t -th CFB in the upper and lower sub-networks. The upper CFB accepts Foin,Got−1,Gut−1 as inputs, and output Got , while the lower CFB accepts Fuin,Gut−1,Got−1 as inputs, and output Gut .</center>
 
@@ -229,7 +229,7 @@ $$
 
 CNN:在论文中，原作者收集了网上的在线数据库（包含1043张HDR图像）用于生成五种色调曲线和九种不同曝光时间的LDR图像，所有的训练图像的大小都调整为512x512，我们在训练模型的过程中使用了代码中原有的数据集进行训练，最后的整体图片明显发红，经分析判断，发现是训练集中存在偏色的图片导致红色通道分布异常，使模型学习到错误的颜色分布。在网络上收集了部分数据集并对图片进行调整之后，我们构建了一个新的训练集，在经过相同的迭代次数之后，明显新训练集的成果更好，Figure 8为生成的曝光图片的前后对比。
 
-![](D:\计算机视觉\HDRI\报告\result\Forest_compare.png)
+![](https://github.com/HuangChengbin1/Two-Stages-Method-HDR/blob/main/img-for-README/Forest_compare.png?raw=true)
 
 <center>Fig.8 Construct a new training set for comparison. The six graphs on the left are the effects of the original training set, and the six graphs on the right are the effects of the reconstructed training set</center>
 
